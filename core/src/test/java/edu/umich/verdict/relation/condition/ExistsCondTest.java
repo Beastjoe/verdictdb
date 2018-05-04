@@ -14,6 +14,6 @@ public class ExistsCondTest extends VerdictTestBase {
     @Test
     public void toStringTest(){
         ExistsCond ex = new ExistsCond(Expr.from(dummyContext, "A"));
-        assertEquals(" EXISTS (`A`)", ex.toString());
+        assertEquals(" EXISTS (`a`)", ex.toString());
     }
 }

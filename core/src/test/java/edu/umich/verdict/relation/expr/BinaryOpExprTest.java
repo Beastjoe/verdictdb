@@ -65,8 +65,8 @@ public class BinaryOpExprTest extends VerdictTestBase {
         Expr dummyExprLeft1 = Expr.from(dummyContext, "2");
         Expr dummyExprRight1 = Expr.from(dummyContext, "1");
         BinaryOpExpr a1 = BinaryOpExpr.from(dummyContext, dummyExprLeft1, dummyExprRight1, "*");
-        Expr dummyExprLeft2 = Expr.from(dummyContext, "2");
-        Expr dummyExprRight2 = Expr.from(dummyContext, "1");
+        Expr dummyExprLeft2 = Expr.from(dummyContext, "1");
+        Expr dummyExprRight2 = Expr.from(dummyContext, "2");
         BinaryOpExpr a2 = BinaryOpExpr.from(dummyContext, dummyExprLeft2, dummyExprRight2, "*");
         assertEquals(true, a.equals(a2)&&!a.equals(a1));
     }

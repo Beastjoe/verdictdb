@@ -12,7 +12,7 @@ public class ColNameExprTest extends VerdictTestBase {
     @Test
     public void fromTest(){
         ColNameExpr a = ColNameExpr.from(dummyContext, "schema.tab.col");
-        assertEquals("shema.tab.'col'", a.toString());
+        assertEquals("schema.tab.`col`", a.toString());
     }
 
     @Test
@@ -37,13 +37,13 @@ public class ColNameExprTest extends VerdictTestBase {
     public void setTabTest(){
         ColNameExpr a = ColNameExpr.from(dummyContext, "schema.tab.col");
         a.setTab("newTab");
-        assertEquals("newTab", a.getCol());
+        assertEquals("newTab", a.getTab());
     }
 
     @Test
     public void setSchemaTest(){
         ColNameExpr a = ColNameExpr.from(dummyContext, "schema.tab.col");
-        a.setTab("newSchema");
+        a.setSchema("newSchema");
         assertEquals("newSchema", a.getSchema());
     }
 
@@ -56,20 +56,20 @@ public class ColNameExprTest extends VerdictTestBase {
     @Test
     public void toStringWithoutQuote(){
         ColNameExpr a = ColNameExpr.from(dummyContext, "schema.tab.col");
-        assertEquals("schema.tab.col", a.toString());
+        assertEquals("schema.tab.`col`", a.toString());
     }
 
     @Test
     public void getTextTest(){
         ColNameExpr a = ColNameExpr.from(dummyContext, "schema.tab.col");
-        assertEquals("tab.col", a.toString());
+        assertEquals("schema.tab.`col`", a.toString());
     }
 
     @Test
     public void withTableSubstitutedTest(){
         ColNameExpr a = ColNameExpr.from(dummyContext, "schema.tab.col");
         Expr b = a.withTableSubstituted("newTab");
-        assertEquals("newTab.col", b.getText());
+        assertEquals("newtab.col", b.getText());
     }
 
     @Test

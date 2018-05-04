@@ -17,17 +17,10 @@ public class AndCondTest extends VerdictTestBase{
     }
 
     @Test
-    public void withTableSubstituteTest(){
-        AndCond a = AndCond.from(Cond.from(dummyContext, "t.o_orderkey=t.vpart"), Cond.from(dummyContext, "o_orderkey>62340"));
-        a.withTableSubstituted("new_t");
-        assertEquals("new_t.`o_orderkey` = new_t.`vpart`", a.getLeft().toString());
-    }
-
-    @Test
     public void removeTest(){
         AndCond a = AndCond.from(Cond.from(dummyContext, "t.o_orderkey=t.vpart"), Cond.from(dummyContext, "o_orderkey>62340"));
         Cond c = Cond.from(dummyContext,"o_orderkey>62340");
-        assertEquals("t.`o_orderkey` = t.`vpart`", a.remove(c));
+        assertEquals("t.`o_orderkey` = t.`vpart`", a.remove(c).toString());
     }
 
     @Test

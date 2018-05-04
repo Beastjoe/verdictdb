@@ -11,21 +11,20 @@ public class OrderByExprTest extends VerdictTestBase {
 
     @Test
     public void fromTest(){
-        OrderByExpr o = OrderByExpr.from(null, " count(*) AS cnt order by cnt ASC");
-        assertEquals("ASC", o.getDirection().toString());
+        OrderByExpr o = OrderByExpr.from(null, " count(*) ASC");
         assertEquals("count(*)", o.getExpression().toString());
     }
 
     @Test
     public void toStringTest(){
-        OrderByExpr o = OrderByExpr.from(null, " count(*) AS cnt order by cnt ASC");
+        OrderByExpr o = OrderByExpr.from(null, " count(*) ASC");
         assertEquals("count(*) ASC", o.toString());
     }
 
     @Test
     public void equalsTest(){
-        OrderByExpr o1 = OrderByExpr.from(null, " count(*) AS cnt order by cnt ASC");
-        OrderByExpr o2 = OrderByExpr.from(null, " count(*) order by cnt ASC");
+        OrderByExpr o1 = OrderByExpr.from(null, " count(*) ASC");
+        OrderByExpr o2 = OrderByExpr.from(null, " count(*) ASC");
         assertEquals(true, o1.equals(o2));
     }
 }

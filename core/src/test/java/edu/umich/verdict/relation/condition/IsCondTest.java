@@ -12,8 +12,8 @@ public class IsCondTest extends VerdictTestBase {
 
     @Test
     public void toStringTest(){
-        IsCond i = new IsCond(ColNameExpr.from(dummyContext, "table.id"), Cond.from(dummyContext, "NULL"));
-        assertEquals("(table.`id` IS null)", i.toString());
+        IsCond i = new IsCond(ColNameExpr.from(dummyContext, "table.id"), new NullCond());
+        assertEquals("(table.`id` IS NULL)", i.toString());
     }
 
 }

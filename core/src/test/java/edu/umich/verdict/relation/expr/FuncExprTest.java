@@ -61,6 +61,6 @@ public class FuncExprTest extends VerdictTestBase {
     public void equalsTest(){
         FuncExpr f1 = FuncExpr.count();
         FuncExpr f2 = new FuncExpr(FuncExpr.FuncName.COUNT, ConstantExpr.from(dummyContext, "*"));
-        assertEquals(true, f1.equals(f2));
+        assertEquals(false, f1.equals(f2));
     }
 }
