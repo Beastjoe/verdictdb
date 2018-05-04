@@ -18,17 +18,19 @@ package edu.umich.verdict.relation.expr;
 
 import static org.junit.Assert.assertEquals;
 
+import edu.umich.verdict.VerdictTestBase;
 import org.junit.Test;
 
 import edu.umich.verdict.VerdictContext;
 
-public class SelectElemTest {
+public class SelectElemTest extends VerdictTestBase {
 
     VerdictContext dummyContext = null;
 
     @Test
     public void starTest() {
-        SelectElem.from(dummyContext, "*");
+        SelectElem s = SelectElem.from(dummyContext, "*");
+        assertEquals("*", s.toString());
     }
 
     @Test
