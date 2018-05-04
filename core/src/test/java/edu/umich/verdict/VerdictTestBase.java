@@ -16,7 +16,7 @@ public abstract class VerdictTestBase {
     protected Connection conn;
 
     protected static boolean isSetup = false;
-
+/*
     @BeforeClass
     public void setUp() throws Exception {
         conn = DriverManager.getConnection("jdbc:h2:mem:verdict_test;DB_CLOSE_DELAY=-1");
@@ -32,4 +32,5 @@ public abstract class VerdictTestBase {
     public void tearDown() throws Exception {
         conn.close();
     }
+    */
 }

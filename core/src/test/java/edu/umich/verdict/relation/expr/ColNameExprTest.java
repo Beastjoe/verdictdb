@@ -82,7 +82,7 @@ public class ColNameExprTest extends VerdictTestBase {
     public void equalsTest(){
         ColNameExpr a = ColNameExpr.from(dummyContext, "schema.tab.col");
         ColNameExpr b = ColNameExpr.from(dummyContext, "schema.tab.col");
-        ColNameExpr c = ColNameExpr.from(dummyContext, "schema.newtab.col");
+        ColNameExpr c = ColNameExpr.from(dummyContext, "newschema.newtab.col");
         assertEquals(true, a.equals(b)&&!a.equals(c));
     }
 

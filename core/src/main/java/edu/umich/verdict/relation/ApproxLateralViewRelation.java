@@ -124,10 +124,4 @@ public class ApproxLateralViewRelation extends ApproxRelation {
         return new ArrayList<ColNameExpr>();
     }
 
-    public String getTableAlias() { return tableAlias; }
-
-    public String getColumnAlias() {
-        return columnAlias;
-    }
-
 }
