@@ -34,21 +34,42 @@ public class FuncExprTest extends VerdictTestBase {
     }
 
     @Test
-    public void toStringTest(){
+    public void toStringTest1(){
         FuncExpr f = new FuncExpr(FuncExpr.FuncName.COUNT, ConstantExpr.from(dummyContext, "*"));
         assertEquals("count(*)", f.toString());
     }
 
     @Test
-    public void isaggTest(){
+    public void toStringTest2(){
+        FuncExpr f1 = new FuncExpr(FuncExpr.FuncName.COUNT, ColNameExpr.from(dummyContext, "table.id"));
+        FuncExpr f2 = new FuncExpr(FuncExpr.FuncName.ENCODE, f1, ConstantExpr.from(dummyContext, 16));
+        assertEquals("encode(count(table.`id`), 16)", f2.toString());
+    }
+
+    @Test
+    public void isaggTest1(){
         FuncExpr f = new FuncExpr(FuncExpr.FuncName.COUNT, ConstantExpr.from(dummyContext, "*"));
         assertEquals(true, f.isagg());
     }
 
     @Test
-    public void isCountTest(){
+    public  void isaggTest2(){
+        FuncExpr f1 = new FuncExpr(FuncExpr.FuncName.COUNT, ColNameExpr.from(dummyContext, "table.id"));
+        FuncExpr f2 = new FuncExpr(FuncExpr.FuncName.ENCODE, f1, ConstantExpr.from(dummyContext, 16));
+        assertEquals(true, f2.isagg());
+    }
+
+    @Test
+    public void isCountTest1(){
         FuncExpr f = new FuncExpr(FuncExpr.FuncName.COUNT, ConstantExpr.from(dummyContext, "*"));
         assertEquals(true, f.isCount());
+    }
+
+    @Test
+    public void isCountTest2(){
+        FuncExpr f1 = new FuncExpr(FuncExpr.FuncName.COUNT, ColNameExpr.from(dummyContext, "table.id"));
+        FuncExpr f2 = new FuncExpr(FuncExpr.FuncName.ENCODE, f1, ConstantExpr.from(dummyContext, 16));
+        assertEquals(false, f2.isCount());
     }
 
     @Test

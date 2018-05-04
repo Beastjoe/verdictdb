@@ -34,7 +34,7 @@ public class BinaryOpExprTest extends VerdictTestBase {
     }
 
     @Test
-    public void toStringTest(){
+    public void toStringTest1(){
         Expr dummyExprLeft = Expr.from(dummyContext, "1");
         Expr dummyExprRight = Expr.from(dummyContext, "2");
         BinaryOpExpr a = BinaryOpExpr.from(dummyContext, dummyExprLeft, dummyExprRight, "*");
@@ -42,11 +42,39 @@ public class BinaryOpExprTest extends VerdictTestBase {
     }
 
     @Test
-    public void isaggTest(){
+    public void toStringTest2(){
+        BinaryOpExpr b1;
+        BinaryOpExpr b2 = BinaryOpExpr.from(dummyContext, ColNameExpr.from(dummyContext, "table.col"),
+                ConstantExpr.from(dummyContext, 2), "*");
+        b1 = BinaryOpExpr.from(dummyContext, ConstantExpr.from(dummyContext, 1), b2, "/");
+        assertEquals("(1 / (table.`col` * 2))", b1.toString());
+    }
+
+    @Test
+    public void withTableSubstitutedTest(){
+        BinaryOpExpr b1;
+        BinaryOpExpr b2 = BinaryOpExpr.from(dummyContext, ColNameExpr.from(dummyContext, "table.col"),
+                ConstantExpr.from(dummyContext, 2), "*");
+        b1 = BinaryOpExpr.from(dummyContext, ConstantExpr.from(dummyContext, 1), b2, "/");
+        assertEquals("(1 / (newtab.`col` * 2))", b1.withTableSubstituted("newtab").toString());
+    }
+
+    @Test
+    public void isaggTest1(){
         Expr dummyExprLeft = Expr.from(dummyContext, "1");
         Expr dummyExprRight = Expr.from(dummyContext, "2");
         BinaryOpExpr a = BinaryOpExpr.from(dummyContext, dummyExprLeft, dummyExprRight, "*");
         assertEquals(false, a.isagg());
+    }
+
+    @Test
+    public void isaggTest2(){
+        FuncExpr f = new FuncExpr(FuncExpr.FuncName.COUNT, ConstantExpr.from(dummyContext, "*"));
+        BinaryOpExpr b1;
+        BinaryOpExpr b2 = BinaryOpExpr.from(dummyContext, ColNameExpr.from(dummyContext, "table.col"),
+                ConstantExpr.from(dummyContext, 2), "*");
+        b1 = BinaryOpExpr.from(dummyContext, f, b2, "/");
+        assertEquals(true, b1.isagg());
     }
 
     @Test

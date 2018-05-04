@@ -11,10 +11,21 @@ public class ConstantExprTest extends VerdictTestBase {
     private static VerdictContext dummyContext = null;
 
     @Test
-    public void setValueTest(){
+    public void setValueTest1(){
         ConstantExpr c = new ConstantExpr(dummyContext, "123");
         c.setValue("111");
         assertEquals("111", c.getValue());
+    }
+
+    @Test
+    public void setValueTest2(){
+        ConstantExpr c = new ConstantExpr(dummyContext, "123");
+        BinaryOpExpr b1;
+        BinaryOpExpr b2 = BinaryOpExpr.from(dummyContext, ColNameExpr.from(dummyContext, "table.col"),
+                ConstantExpr.from(dummyContext, 2), "*");
+        b1 = BinaryOpExpr.from(dummyContext, ConstantExpr.from(dummyContext, 1), b2, "/");
+        c.setValue(b1);
+        assertEquals(b1, c.getValue());
     }
 
     @Test
