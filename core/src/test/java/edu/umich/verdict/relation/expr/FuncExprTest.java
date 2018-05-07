@@ -3,6 +3,7 @@ package edu.umich.verdict.relation.expr;
 import edu.umich.verdict.VerdictContext;
 import edu.umich.verdict.VerdictTestBase;
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 public class FuncExprTest extends VerdictTestBase {
@@ -83,5 +84,30 @@ public class FuncExprTest extends VerdictTestBase {
         FuncExpr f1 = FuncExpr.count();
         FuncExpr f2 = new FuncExpr(FuncExpr.FuncName.COUNT, ConstantExpr.from(dummyContext, "*"));
         assertEquals(false, f1.equals(f2));
+    }
+
+    @Test
+    public void getExpressionTest(){
+        FuncExpr f1 = new FuncExpr(FuncExpr.FuncName.COUNT, ConstantExpr.from(dummyContext, "*"));
+        FuncExpr f2 = new FuncExpr(FuncExpr.FuncName.SUM, f1);
+        assertEquals(f1, f2.getExpressions());
+    }
+
+    @Test
+    public void OverClauseTest(){
+        OverClause o = OverClause.from(dummyContext, "OVER(PARTITION BY vt155.orderkey, vt155.price order by vt155.price DESC)");
+        assertEquals(o.toString(), "OVER (partition by vt155.`orderkey`, vt155.`price` order by vt155.`price`)");
+        FuncExpr f = new FuncExpr(FuncExpr.FuncName.COUNT, ConstantExpr.from(dummyContext, "*"), o);
+        assertEquals("count(*) OVER (partition by vt155.`orderkey`, vt155.`price` order by vt155.`price`)" ,f.toString());
+    }
+
+    @Test
+    public void withTableSubstituted(){
+        ColNameExpr c1 = ColNameExpr.from(dummyContext, "table.price");
+        ColNameExpr c2 = ColNameExpr.from(dummyContext, "table.id");
+        ColNameExpr c3 = ColNameExpr.from(dummyContext, "table.age");
+        FuncExpr f = new FuncExpr(FuncExpr.FuncName.CONV, c1, c2, c3);
+        f = (FuncExpr) f.withTableSubstituted("newtab");
+        assertEquals("conv(newtab.`price`, newtab.`id`, newtab.`age`)",f.toString());
     }
 }
