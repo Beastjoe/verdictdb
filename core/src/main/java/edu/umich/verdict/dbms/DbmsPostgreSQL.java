@@ -348,6 +348,7 @@ public class DbmsPostgreSQL extends DbmsJDBC {
         return executeJdbcQuery("select nspname from pg_namespace");
     }
 
+
     @Override
     public void createMetaTablesInDBMS(TableUniqueName originalTableName, TableUniqueName sizeTableName,
                                        TableUniqueName nameTableName) throws VerdictException {

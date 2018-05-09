@@ -17,7 +17,8 @@ public abstract class VerdictTestBase {
 
     protected static boolean isSetup = false;
 
-    protected final static String RESOURCE_PATH = "./src/test/resources/tpch";
+    //protected final static String RESOURCE_PATH = "./src/test/resources/tpch";
+    protected final static String RESOURCE_PATH = "C:\\Users\\91017\\IdeaProjects\\verdictdb-master\\core\\src\\test\\resources\\tpch";
 
     protected final static String SCHEMA_FILE = "tpch-schema.sql";
 
@@ -25,9 +26,9 @@ public abstract class VerdictTestBase {
     public static void setUp() throws Exception {
         if (!isSetup) {
             VerdictConf conf = new VerdictConf();
-            conf.setDbms("h2mem");
+            conf.setDbms("h2");
             conf.setDbmsSchema("test");
-            conf.setLoglevel("info");
+            conf.setLoglevel("debug");
             vc = VerdictJDBCContext.from(conf);
 
             // setup tpc-h schema
