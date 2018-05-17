@@ -444,7 +444,7 @@ public class ApproxAggregatedRelation extends ApproxRelation {
                         }
 
                         if (conditionExpr.length() > 0) {
-                            conditionExpr.insert(0, " where");
+                            conditionExpr.insert(0, " where ");
                         }
                         String subquery = String.format("(SELECT count(1) from %s%s) ",
                                 UNKNOWN_TABLE_FOR_WINDOW_FUNC, conditionExpr);
@@ -493,7 +493,7 @@ public class ApproxAggregatedRelation extends ApproxRelation {
                             else conditionExpr.append(csql);
                         }
                         if (conditionExpr.length() > 0) {
-                            conditionExpr.insert(0, " where");
+                            conditionExpr.insert(0, " where ");
                         }
                         String subquery = String.format("(SELECT count(1) from %s%s) ",
                                 UNKNOWN_TABLE_FOR_WINDOW_FUNC, conditionExpr);

@@ -15,7 +15,7 @@ import edu.umich.verdict.postgresql.PostgresqlBasicTest;
 
 public class PostgresqlSimpleQuery {
     public static PostgresqlBasicTest postgresqlBasicTest;
-    public static void main(String[] args) throws VerdictException, FileNotFoundException {
+    public static void main(String[] args) throws VerdictException, FileNotFoundException, SQLException{
         VerdictConf conf = new VerdictConf();
         conf.setDbms("postgresql");
         conf.setHost("localhost");
@@ -23,14 +23,19 @@ public class PostgresqlSimpleQuery {
         conf.setDbmsSchema("tpch1g");
         conf.setUser("postgres");
         conf.setPassword("zhongshucheng123");
-        conf.set("loglevel", "debug");
+        conf.set("loglevel", "info");
 
         VerdictContext vc = VerdictJDBCContext.from(conf);
-        String sql = "create 1% uniform sample of orders";
-        String sql2 = "select count(*) from orders";
+        String sql = "create 2% uniform sample of orders";
+        String sql2 = "select count(distinct) as res from orders";
         vc.executeJdbcQuery(sql);
-        vc.executeJdbcQuery(sql2);
-        ResultSet rs = vc.getResultSet();
+        ResultSet rs = vc.executeJdbcQuery(sql2);
+        Double err;
+        if (rs.next()) {
+            Long cnt = rs.getLong(1);
+            err = rs.getDouble(2);
+            System.out.println(err);
+        }
         sql = "drop samples of orders";
         vc.executeJdbcQuery(sql);
         vc.destroy();
