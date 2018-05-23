@@ -30,7 +30,7 @@ public abstract class VerdictTestBase {
             conf.setDbmsSchema("test");
             conf.setLoglevel("debug");
             vc = VerdictJDBCContext.from(conf);
-
+            /*
             // setup tpc-h schema
             File schemaFile = new File(RESOURCE_PATH + File.separator + SCHEMA_FILE);
             String schemas = Files.toString(schemaFile, Charsets.UTF_8);
@@ -43,6 +43,7 @@ public abstract class VerdictTestBase {
 
             // load some tpc-h data into embedded in-memory DB
             loadData();
+            */
             isSetup = true;
         }
     }

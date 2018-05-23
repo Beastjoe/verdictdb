@@ -1,0 +1,54 @@
+Unit Test of Approximate Query
+
+Test Unifrom, Stratified and Universe Sampling separately by running corresponding classes.
+Each test class involves 4 aggregated queries: count(), sum(), avg(), count(dinstinct).
+For every aggregation function, test feature:
+
+    1. flat query(no join, group by, filter),
+    2. query with filters, which have
+        a. one predicate
+        b. two predicates
+    3. query with join two tables, where the form of join is
+        a. left join
+        b. right join
+        c. inner join
+        d. outer join
+    4. query with join three tables, where the form of join is
+        a. left join
+        b. right join
+        c. inner join
+        d. outer join
+    5. query with group by clause, where
+        a. group by one column
+        b. group by two columns
+    6. Combination of 2 and 3 (4 is omitted for performance reason)
+    7. Combination of 2 and 5
+    8. Combination of 3 and 5
+    9. Combination of 2, 3 and 5
+    10. Select clause with subquery
+        a. Substitute 1
+        b. Substitute 2
+        c. Substitute 3
+        d. Substitute 5
+        e. Substitute 6
+        f. Substitute 7
+        g. Substitute 8
+        h. Substitute 9
+    11. From clause with subquery
+        a. Substitute 1
+        b. Substitute 2
+        d. Substitute 5
+        f. Substitute 7
+    12. Where clause with subquery
+        a. Substitute 2
+        b. Substitute 6
+        d. Substitute 7
+        f. Substitute 9
+    13. Union
+        a. Union of 5
+        b. Union of 7
+        c. Union of 9
+
+Since the result of VerdictDB is approximate, so it is possible to fail the test.
+For group-by query, it is also possible to have fewer rows than the true results.
+You can set how much tolerance of deviation from the true result. The default is 10% from the true result.

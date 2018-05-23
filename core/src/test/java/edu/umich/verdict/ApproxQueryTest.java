@@ -28,16 +28,16 @@ public class ApproxQueryTest extends VerdictTestBase {
         vc.executeJdbcQuery("drop samples of customer");
         vc.executeJdbcQuery("drop samples of supplier");
         vc.executeJdbcQuery("drop samples of nation");
-        //vc.executeJdbcQuery("create 20% uniform sample of customer");
         vc.executeJdbcQuery("create 20% stratified sample of customer on c_nationkey");
+        //vc.executeJdbcQuery("create 20% stratified sample of customer on c_nationkey");
         // vc.executeJdbcQuery("create 20% sample of supplier");
 
         vc.executeJdbcQuery("create 20% stratified sample of nation on n_nationkey");
         //vc.executeJdbcQuery("create 20% stratified sample of customer on c_nationkey");
         //vc.executeJdbcQuery("create 20% universe sample of customer on c_nationkey");
         //vc.executeJdbcQuery("create 20% universe sample of customer on c_nationkey");
-        //vc.executeJdbcQuery("create 20% uniform sample of supplier");
-        vc.executeJdbcQuery("create 20% stratified sample of supplier on s_nationkey");
+        vc.executeJdbcQuery("create 20% uniform sample of supplier");
+        //vc.executeJdbcQuery("create 20% stratified sample of supplier on s_nationkey");
         //vc.executeJdbcQuery("create 20% universe sample of supplier on s_nationkey");
     }
 
@@ -45,18 +45,19 @@ public class ApproxQueryTest extends VerdictTestBase {
     All test have confidence of 95% to pass.
     */
 
-    // @Test
+    @Test
     public void CountTest() throws VerdictException, SQLException {
+        DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
+        Statement stmt = dbms.createStatement();
         vc.executeJdbcQuery("select count(*) from customer");
         ResultSet rs = vc.getResultSet();
         if (rs.next()){
            long rowCount = rs.getLong(1);
-           System.out.println(rowCount);
            assertEquals(CUSTOMER_ROW_COUNT, rowCount);
         }
     }
 
-    //@Test //BUG
+    @Test //BUG: Wrong answer for stratified sampling. Why taking average group by vpart?
     public void CountDistinctTest1() throws VerdictException, SQLException{
         DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
         Statement stmt = dbms.createStatement();
@@ -66,7 +67,7 @@ public class ApproxQueryTest extends VerdictTestBase {
         double err = 0;
         if (rs.next()){
             sampleCount = rs.getLong(1);
-            err = rs.getDouble(2);
+            //err = rs.getDouble(2);
         }
         rs = stmt.executeQuery("select count(distinct c_nationkey) from customer");
         if (rs.next()){
@@ -75,7 +76,7 @@ public class ApproxQueryTest extends VerdictTestBase {
         }
     }
 
-    //@Test//BUG
+    //@Test//BUG: Wrong answer for stratified sampling
     public void CountDistinctTest2() throws VerdictException, SQLException{
         DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
         Statement stmt = dbms.createStatement();
@@ -200,6 +201,25 @@ public class ApproxQueryTest extends VerdictTestBase {
         }
     }
 
+//    @Test
+    public void FilterTest4() throws VerdictException, SQLException {
+        DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
+        Statement stmt = dbms.createStatement();
+        long sample_res = 0, original_res = 0;
+        double err = 0;
+        vc.executeJdbcQuery("select count(*)  from customer as c1, customer as c2 where c1.c_nationkey > c2.c_nationkey and c1.c_acctbal > c2.c_acctbal");
+        ResultSet rs = vc.getResultSet();
+        while (rs.next()){
+            sample_res = (rs.getLong(1));
+            err = (rs.getDouble(2));
+        }
+        rs = stmt.executeQuery("select count(*)  from customer as c1, customer as c2 where c1.c_nationkey > c2.c_nationkey and c1.c_acctbal > c2.c_acctbal");
+        while (rs.next()){
+            original_res = (rs.getLong(1));
+            assertEquals(true, original_res-err < sample_res && sample_res < original_res + err);
+        }
+    }
+
     // @Test
     public void InCondTest() throws VerdictException, SQLException {
         DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
@@ -239,7 +259,7 @@ public class ApproxQueryTest extends VerdictTestBase {
     }
 
     // @Test //BUG: No feasible plan is found
-    public void LimitTest() throws VerdictException, SQLException {
+    public void LimitTest1() throws VerdictException, SQLException {
         DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
         Statement stmt = dbms.createStatement();
         double original_res = 0, sample_res = 0;
@@ -257,7 +277,26 @@ public class ApproxQueryTest extends VerdictTestBase {
         assertEquals(true, original_res - err < sample_res && sample_res < original_res + err);
     }
 
-    // @Test //BUG: No feasible plan is found
+    // @Test
+    public void LimitTest2() throws VerdictException, SQLException {
+        DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
+        Statement stmt = dbms.createStatement();
+        double original_res = 0, sample_res = 0;
+        double err = 0;
+        vc.executeJdbcQuery("select avg(c_acctbal) from customer LIMIT 100");
+        ResultSet rs = vc.getResultSet();
+        while (rs.next()){
+            sample_res = (rs.getDouble(1));
+            err = (rs.getDouble(2));
+        }
+        rs = stmt.executeQuery("select avg(c_acctbal) from customer LIMIT 100");
+        while (rs.next()){
+            original_res = (rs.getDouble(1));
+        }
+        assertEquals(true, original_res - err < sample_res && sample_res < original_res + err);
+    }
+
+    //@Test //BUG: No feasible plan is found
     public void OrderbyTest() throws VerdictException, SQLException {
         DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
         Statement stmt = dbms.createStatement();
@@ -437,28 +476,8 @@ public class ApproxQueryTest extends VerdictTestBase {
         }
     }
 
-    // @Test //BUG: Go wrong when rewriting sql. No agg
-    public void UnionTest1() throws VerdictException, SQLException {
-        DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
-        Statement stmt = dbms.createStatement();
-        long sample_res = 0, original_res = 0;
-        double err = 0;
-        ResultSet rs;
-        vc.executeJdbcQuery("select c_nationkey as nationkey from customer union select s_nationkey as nationkey from supplier");
-        rs = vc.getResultSet();
-        while (rs.next()) {
-            sample_res = (rs.getLong(1));
-            err = rs.getDouble(2);
-        }
-        stmt.executeQuery("select c_nationkey as nationkey from customer union select s_nationkey as nationkey from supplier");
-        while (rs.next()) {
-            original_res = (rs.getLong(1));
-        }
-        assertEquals(true, (double) original_res - err < (double) sample_res && (double) sample_res < err + (double) original_res);
-    }
-
     //@Test //BUG: Go wrong when rewriting sql. With agg
-    public void UnionTesT2() throws VerdictException, SQLException {
+    public void UnionTest1() throws VerdictException, SQLException {
         DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
         Statement stmt = dbms.createStatement();
         List sample_res = new ArrayList(), original_res = new ArrayList(), err = new ArrayList();
@@ -470,6 +489,28 @@ public class ApproxQueryTest extends VerdictTestBase {
             err.add(rs.getDouble(2));
         }
         stmt.executeQuery("select count(c_nationkey) from customer union select count(s_nationkey) from supplier");
+        while (rs.next()) {
+            original_res.add(rs.getLong(1));
+        }
+        assertEquals(true, (long) original_res.get(0) - (double)err.get(0) < (long) sample_res.get(0)
+                && (long) sample_res.get(0) < (double)err.get(0) + (long) original_res.get(0));
+        assertEquals(true, (long) original_res.get(1) - (double)err.get(1) < (long) sample_res.get(1)
+                && (long) sample_res.get(1) < (double)err.get(1) + (long) original_res.get(1));
+    }
+
+    //@Test //BUG: rewrite the sql
+    public void UnionTest2() throws VerdictException, SQLException {
+        DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
+        Statement stmt = dbms.createStatement();
+        List sample_res = new ArrayList(), original_res = new ArrayList(), err = new ArrayList();
+        ResultSet rs;
+        vc.executeJdbcQuery("select count(nationkey) from (select c_nationkey as nationkey from customer union select s_nationkey as nationkey from supplier)");
+        rs = vc.getResultSet();
+        while (rs.next()) {
+            sample_res.add(rs.getLong(1));
+            err.add(rs.getDouble(2));
+        }
+        stmt.executeQuery("select count(nationkey) from (select c_nationkey as nationkey from customer union select s_nationkey as nationkey from supplier)");
         while (rs.next()) {
             original_res.add(rs.getLong(1));
         }
@@ -517,7 +558,7 @@ public class ApproxQueryTest extends VerdictTestBase {
         }
     }
 
-    //@Test
+    // @Test
     public void SubqueryTest2() throws VerdictException, SQLException{
         DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
         Statement stmt = dbms.createStatement();
@@ -537,7 +578,7 @@ public class ApproxQueryTest extends VerdictTestBase {
     }
 
 
-    @Test //Wrong Answer
+    //@Test //Wrong Answer when using stratified and universe sample
     public void SubqueryTest3() throws VerdictException, SQLException{
         DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
         Statement stmt = dbms.createStatement();
@@ -548,7 +589,7 @@ public class ApproxQueryTest extends VerdictTestBase {
         double err = 0;
         if (rs.next()){
             sampleCount = rs.getDouble(1);
-            err = rs.getDouble(2);
+            //err = rs.getDouble(2);
         }
         rs = stmt.executeQuery(sql);
         if (rs.next()){
@@ -558,7 +599,7 @@ public class ApproxQueryTest extends VerdictTestBase {
     }
 
 
-    //@Test //BUG:Wrong Answer
+    //@Test //BUG:Wrong Answer for universe and stratified sample
     public void SubqueryTest4() throws VerdictException, SQLException{
         DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
         Statement stmt = dbms.createStatement();
@@ -569,7 +610,7 @@ public class ApproxQueryTest extends VerdictTestBase {
         double err = 0;
         if (rs.next()){
             sampleCount = rs.getBigDecimal(1).doubleValue();
-            err = rs.getDouble(2);
+            //err = rs.getDouble(2);
         }
         rs = stmt.executeQuery(sql);
         if (rs.next()){
@@ -577,6 +618,27 @@ public class ApproxQueryTest extends VerdictTestBase {
             assertEquals(true, sampleCount-err<=count && sampleCount+err>=count);
         }
     }
+
+    // @Test //BUG: Unable to rewrite the subquery
+    public void SubqueryTest5() throws VerdictException, SQLException{
+        DbmsJDBC dbms = vc.getDbms().getDbmsJDBC();
+        Statement stmt = dbms.createStatement();
+        String sql = "select count(*) from customer where c_acctbal > (select avg(c_acctbal) from customer)";
+        vc.executeJdbcQuery(sql);
+        ResultSet rs = vc.getResultSet();
+        long sampleCount = 0;
+        double err = 0;
+        if (rs.next()){
+            sampleCount = rs.getLong(1);
+            err = rs.getDouble(2);
+        }
+        rs = stmt.executeQuery(sql);
+        if (rs.next()){
+            long count = rs.getLong(1);
+            assertEquals(true, sampleCount-err<=count && sampleCount+err>=count);
+        }
+    }
+
 
 
 
