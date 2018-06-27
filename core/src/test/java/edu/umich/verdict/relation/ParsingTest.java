@@ -73,5 +73,5 @@ public class ParsingTest {
                 "where Col1 = 'seg'\n";
         vc.executeJdbcQuery(sql);
     }
-
+    
 }
