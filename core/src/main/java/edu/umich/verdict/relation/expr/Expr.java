@@ -242,4 +242,7 @@ class ExpressionGen extends VerdictSQLBaseVisitor<Expr> {
         return SubqueryExpr.from(vc, ctx);
     }
 
+    @Override
+    public Expr visitTime(VerdictSQLParser.TimeContext ctx) { return ConstantExpr.from(vc, ctx.constant_expression().getText()); }
+
 }

@@ -328,11 +328,23 @@ expression
     | expression op=('+' | '-' | '&' | '^' | '|' | '||') expression   #binary_operator_expression
     | expression comparison_operator expression                #binary_operator_expression
     | interval                                                 #interval_expression
+    | time                                                     #time_expression
     ;
 
 interval
 	: INTERVAL constant_expression (DAY | DAYS | MONTH | MONTHS | YEAR | YEARS)
 	;
+
+time_datatype
+    : DATE
+    | TIME
+    | TIMESTAMP
+    | DATETIME
+    ;
+
+time
+    : time_datatype constant_expression
+    ;
 
 constant_expression
     : NULL
@@ -1228,10 +1240,12 @@ COS:                             C O S;
 COUNT:                           C O U N T;
 COUNT_BIG:                       C O U N T '_' B I G;
 CRC32:                           C R C '32';
+DATE:                            D A T E;
 DATEADD:                         D A T E A D D;
 DATEDIFF:                        D A T E D I F F;
 DATENAME:                        D A T E N A M E;
 DATEPART:                        D A T E P A R T;
+DATETIME:                        D A T E T I M E;
 DAY:                             D A Y;
 DAYS:                            D A Y S;
 DECODE:                          D E C O D E;
@@ -1384,6 +1398,7 @@ TAN:                             T A N;
 THROW:                           T H R O W;
 TIES:                            T I E S;
 TIME:                            T I M E;
+TIMESTAMP:                       T I M E S T A M P;
 TO_DATE:                         T O '_' D A T E;
 TRIM:                            T R I M;
 TRY:                             T R Y;
