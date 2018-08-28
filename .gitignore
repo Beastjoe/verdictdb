@@ -14,7 +14,7 @@
 target/
 jars/
 *.class
-site/
+
 
 # eclipse
 .classpath
